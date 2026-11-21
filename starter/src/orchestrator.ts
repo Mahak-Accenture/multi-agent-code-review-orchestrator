@@ -5,6 +5,8 @@ import {codeQualityAnalyzer,testCoverageAnalyzer,refactoringSuggester} from './a
 import { buildOrchestratorPrompt } from './prompts/index.js';
 import { ReviewReportSchema, ReviewReportJSONSchema } from './types/index.js';
 import { logger } from './utils/logger.js';
+import { RateLimiter, withRateLimit, type RateLimiterConfig } from './utils/rate-limiter.js';
+import { ReviewError, ErrorCodes } from './utils/error-handler.js';
 
 /**
  * Orchestrator configuration options
@@ -12,6 +14,7 @@ import { logger } from './utils/logger.js';
 export interface OrchestratorOptions {
   model?: string;
   maxTurns?: number;
+  rateLimitConfig?: Partial<RateLimiterConfig>;
 }
 
 /**
@@ -21,9 +24,11 @@ export interface OrchestratorOptions {
 export class CodeReviewOrchestrator {
 
   private readonly options: OrchestratorOptions;
+  private readonly rateLimiter: RateLimiter;
 
   constructor(options: OrchestratorOptions = {}) {
     this.options = options;
+    this.rateLimiter = new RateLimiter(options.rateLimitConfig);
   }
 
   /**
@@ -76,23 +81,30 @@ export class CodeReviewOrchestrator {
       }
     };
 
-    const res = query({
-      prompt: buildOrchestratorPrompt(owner, repo, prNumber),
-      options
-    });
+    const structuredOutput = await withRateLimit(this.rateLimiter, async () => {
+      const res = query({
+        prompt: buildOrchestratorPrompt(owner, repo, prNumber),
+        options
+      });
 
-    let structuredOutput: unknown;
-    for await (const message of res as AsyncIterable<SDKMessage>) {
-      if (message.type !== 'result') continue;
-      if (message.subtype !== 'success') {
-        throw new Error(`Review failed (${message.subtype}): ${message.errors.join('; ')}`);
+      let output: unknown;
+      for await (const message of res as AsyncIterable<SDKMessage>) {
+        if (message.type !== 'result') continue;
+        if (message.subtype !== 'success') {
+          throw new Error(`Review failed (${message.subtype}): ${message.errors.join('; ')}`);
+        }
+        output = message.structured_output;
       }
-      structuredOutput = message.structured_output;
-    }
+      return output;
+    });
 
     const parsed = ReviewReportSchema.safeParse(structuredOutput);
     if (!parsed.success) {
-      throw new Error(`Review output failed schema validation: ${parsed.error.message}`);
+      throw new ReviewError(
+        `Review output failed schema validation: ${parsed.error.message}`,
+        ErrorCodes.STRUCTURED_OUTPUT_FAILED,
+        { issues: parsed.error.issues }
+      );
     }
 
     const report: ReviewReport = {
