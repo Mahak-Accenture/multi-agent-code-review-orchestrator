@@ -11,6 +11,7 @@ export const refactoringSuggester: AgentDefinition = {
   tools: [
     'Read',
     'Grep',
+    'Skill',
     'Glob',
     'mcp__github__get_file_contents'
   ],
