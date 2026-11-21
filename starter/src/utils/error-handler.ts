@@ -76,7 +76,30 @@ export async function withRetry<T>(
   // - Use setTimeout wrapped in Promise for delay
   // - Throw ReviewError with ErrorCodes.RETRY_EXHAUSTED if all retries fail
 
-  throw new Error('Not implemented');
+  // maxRetries counts total attempts, following the loop bounds in the hints above
+  const maxAttempts = Math.max(1, maxRetries);
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt === maxAttempts) break;
+      const backoffMs = delayMs * Math.pow(2, attempt - 1) + Math.random() * 100;
+      await sleep(backoffMs);
+    }
+  }
+
+  throw new ReviewError(
+    `Operation failed after ${maxAttempts} attempts: ${formatError(lastError)}`,
+    ErrorCodes.RETRY_EXHAUSTED,
+    { attempts: maxAttempts, lastError: formatError(lastError) }
+  );
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -103,7 +126,19 @@ export async function withTimeout<T>(
   // - Throw ReviewError with ErrorCodes.AGENT_TIMEOUT on timeout
   // - Include timeoutMs in metadata
 
-  throw new Error('Not implemented');
+  // The timer is cleared in finally so it does not keep the process alive after fn settles
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new ReviewError(errorMessage, ErrorCodes.AGENT_TIMEOUT, { timeoutMs }));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([fn(), timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
