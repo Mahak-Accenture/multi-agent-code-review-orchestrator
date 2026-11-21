@@ -59,7 +59,7 @@
       <div class="metric-label">Critical Issues</div>
     </div>
     <div class="metric">
-      <div class="metric-value">20</div>
+      <div class="metric-value">19</div>
       <div class="metric-label">Tests Needed</div>
     </div>
     <div class="metric">
@@ -72,37 +72,37 @@
   <ul>
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>security</strong>: Replace direct payment card handling with PCI-compliant payment gateway integration to prevent storing sensitive card data
+        <strong>security</strong>: Replace raw credit card handling with PCI-compliant payment gateway tokenization (Stripe, PayPal) to avoid storing sensitive card data.
         <br><small>Files: src/premium.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>test-coverage</strong>: Add comprehensive tests for payment processing functions including validation, pricing calculations, and transaction handling
+        <strong>test-coverage</strong>: Add comprehensive test coverage for payment processing function including validation, charging, and subscription upgrade paths.
         <br><small>Files: src/premium.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>test-coverage</strong>: Add tests for card validation logic to ensure all payment security controls work correctly
+        <strong>test-coverage</strong>: Add test coverage for card validation logic including card number, CVV, and expiry date validation edge cases.
         <br><small>Files: src/premium.ts</small>
       </li>
     
-      <li class="rec-high">
-        <span class="priority">[HIGH]</span>
-        <strong>bug-risk</strong>: Fix card number validation to support multiple card types and implement Luhn algorithm for proper validation
+      <li class="rec-critical">
+        <span class="priority">[CRITICAL]</span>
+        <strong>test-coverage</strong>: Add test coverage for pricing calculation logic to ensure correct calculation of base price, tax, and processing fees for all tiers.
         <br><small>Files: src/premium.ts</small>
       </li>
     
-      <li class="rec-high">
-        <span class="priority">[HIGH]</span>
-        <strong>bug-risk</strong>: Fix expiry date validation logic to handle edge cases and correctly validate cards through end of expiry month
+      <li class="rec-critical">
+        <span class="priority">[CRITICAL]</span>
+        <strong>test-coverage</strong>: Add test coverage for payment gateway integration including successful charges and database error handling.
         <br><small>Files: src/premium.ts</small>
       </li>
     </ul>
 
   <footer>
-    Generated at 2026-11-21T19:40:20.685Z • Duration: 167628ms
+    Generated at 2026-11-21T22:51:03.109Z • Duration: 158905ms
   </footer>
 </body>
 </html>

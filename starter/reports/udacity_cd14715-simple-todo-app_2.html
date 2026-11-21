@@ -59,7 +59,7 @@
       <div class="metric-label">Critical Issues</div>
     </div>
     <div class="metric">
-      <div class="metric-value">10</div>
+      <div class="metric-value">14</div>
       <div class="metric-label">Tests Needed</div>
     </div>
     <div class="metric">
@@ -72,37 +72,37 @@
   <ul>
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>security</strong>: Fix SQL injection vulnerabilities in searchTodos, searchTodosByStatus, and getTodosByUser by using parameterized queries instead of string concatenation.
+        <strong>security</strong>: Fix SQL injection vulnerabilities in searchTodos, searchTodosByStatus, and getTodosByUser by replacing string concatenation with parameterized queries
         <br><small>Files: src/todo.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>test-coverage</strong>: Add security tests for vulnerable search functions to verify SQL injection risks and ensure fixes work correctly.
+        <strong>test-coverage</strong>: Add security tests to verify SQL injection prevention in all three search functions with malicious input
+        <br><small>Files: src/todo.ts</small>
+      </li>
+    
+      <li class="rec-critical">
+        <span class="priority">[CRITICAL]</span>
+        <strong>test-coverage</strong>: Add tests for createTodo function covering database insertion, error handling, and return value validation
         <br><small>Files: src/todo.ts</small>
       </li>
     
       <li class="rec-high">
         <span class="priority">[HIGH]</span>
-        <strong>test-coverage</strong>: Add comprehensive tests for core CRUD operations (createTodo, getAllTodos, getTodoById, updateTodoStatus, deleteTodo).
+        <strong>test-coverage</strong>: Add comprehensive test coverage for getAllTodos, getTodoById, updateTodoStatus, and deleteTodo functions
         <br><small>Files: src/todo.ts</small>
       </li>
     
-      <li class="rec-medium">
-        <span class="priority">[MEDIUM]</span>
-        <strong>bug-risk</strong>: Replace custom ID generation with crypto.randomUUID() to prevent ID collision issues.
-        <br><small>Files: src/todo.ts</small>
-      </li>
-    
-      <li class="rec-medium">
-        <span class="priority">[MEDIUM]</span>
-        <strong>performance</strong>: Consider implementing full-text search or database-specific search indexing to improve search performance.
+      <li class="rec-high">
+        <span class="priority">[HIGH]</span>
+        <strong>refactoring</strong>: Replace string concatenation with parameterized queries in search functions to eliminate SQL injection vulnerabilities
         <br><small>Files: src/todo.ts</small>
       </li>
     </ul>
 
   <footer>
-    Generated at 2026-11-21T19:35:08.836Z • Duration: 133601ms
+    Generated at 2026-11-21T22:51:34.125Z • Duration: 141018ms
   </footer>
 </body>
 </html>

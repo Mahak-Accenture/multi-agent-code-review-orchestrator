@@ -7,24 +7,24 @@
 | **Overall Score** | 42/100 |
 | **Files Reviewed** | 1 |
 | **Critical Issues** | 2 |
-| **High Priority Tests** | 20 |
+| **High Priority Tests** | 19 |
 | **Refactoring Opportunities** | 8 |
 
 ## 🎯 Top Recommendations
 
-1. 🚨 **security**: Replace direct payment card handling with PCI-compliant payment gateway integration to prevent storing sensitive card data
+1. 🚨 **security**: Replace raw credit card handling with PCI-compliant payment gateway tokenization (Stripe, PayPal) to avoid storing sensitive card data.
    - Files: src/premium.ts
 
-2. 🚨 **test-coverage**: Add comprehensive tests for payment processing functions including validation, pricing calculations, and transaction handling
+2. 🚨 **test-coverage**: Add comprehensive test coverage for payment processing function including validation, charging, and subscription upgrade paths.
    - Files: src/premium.ts
 
-3. 🚨 **test-coverage**: Add tests for card validation logic to ensure all payment security controls work correctly
+3. 🚨 **test-coverage**: Add test coverage for card validation logic including card number, CVV, and expiry date validation edge cases.
    - Files: src/premium.ts
 
-4. ⚠️ **bug-risk**: Fix card number validation to support multiple card types and implement Luhn algorithm for proper validation
+4. 🚨 **test-coverage**: Add test coverage for pricing calculation logic to ensure correct calculation of base price, tax, and processing fees for all tiers.
    - Files: src/premium.ts
 
-5. ⚠️ **bug-risk**: Fix expiry date validation logic to handle edge cases and correctly validate cards through end of expiry month
+5. 🚨 **test-coverage**: Add test coverage for payment gateway integration including successful charges and database error handling.
    - Files: src/premium.ts
 
 ## 📁 File Details
@@ -33,25 +33,25 @@
 
 **Quality Score:** 42/100 | **Coverage:** ~0%
 
-#### Issues (13)
-  - Line 18: `critical` Sensitive payment card data (cardNumber, cvv) stored in plain interface without encryption or masking requirements. This violates PCI-DSS compliance standards.
-  - Line 115: `critical` Credit card number passed as parameter and potentially logged. The chargeCard function receives full payment details including sensitive card data that could be exposed in logs or error messages.
-  - Line 64: `high` Card number validation only checks length === 16, but many valid cards have 13-19 digits (Amex has 15, Visa/MC have 16, etc.). This will reject valid cards.
+#### Issues (14)
+  - Line 18: `critical` PaymentDetails interface exposes sensitive credit card data (cardNumber, cvv) in plaintext without any indication of encryption or PCI compliance
+  - Line 115: `critical` Credit card number is logged/stored in database query with payment.cardNumber.slice(-4), but the full cardNumber is passed around in the PaymentDetails object throughout the application
+  - Line 64: `high` Card number validation only checks length === 16, missing Luhn algorithm validation and not accounting for cards with 13-19 digits
 
-  *...and 10 more*
+  *...and 11 more*
 
-#### Test Gaps (22)
+#### Test Gaps (21)
   - `processPremiumPayment` (critical priority)
   - `processPremiumPayment` (critical priority)
 
-  *...and 20 more*
+  *...and 19 more*
 
 #### Refactoring Opportunities (8)
-  - **extract-function**: Extract feature list determination into a separate function to improve testability and reusability
-  - **simplify**: Replace early-return pattern with consolidated validation checks for better readability
+  - **extract-function**: Extract feature assignment logic into a separate function to improve testability and reusability
+  - **simplify**: Use guard clauses to reduce nesting and improve readability
 
   *...and 6 more*
 
 ---
 
-*Generated at 2026-11-21T19:40:20.685Z • Duration: 167628ms*
+*Generated at 2026-11-21T22:51:03.109Z • Duration: 158905ms*
